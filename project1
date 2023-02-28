@@ -113,3 +113,105 @@ SELECT Z.Kod_zlecenia, N.imie, N.Nazwisko, N.Miasto
 From Nazwiska AS N JOIN Zliecenia AS Z
 ON N.Numer = Z.Nr_prac
 Where N.Miasto NOT IN ('Gdansk','Sopot','Gdynia')
+
+--2--
+
+INSERT INTO Nazwiska
+VALUES 
+(15,'Ewa','Ewkowska','księgowy',2500,NULL)
+(16,'Krysztof','Krzysztofowicz','księgowy',2500,NULL);
+
+SELECT *FROM Nazwiska
+WHERE Miasto <> NULL;
+
+SELECT 10 + NULL as wynik1,
+(10+4)*2 - NULL as wynik2,
+'Ala ma' + 'kota' + NULL + '!' as wynik3;
+
+SELECT Imie, Nazwisko,
+ISNULL(Miasto, 'nie podano') as Miejscowość
+FROM Nazwiska;
+
+SELECT Imie, Nazwisko,
+COALESCE(Miasto, Imie+' nie podał.') as Miejscowość
+FROM Nazwiska;
+
+SELECT NULLIF(10,10) as wynik1,
+NULLIF(10,5) as wynik2,
+NULLIF('Ala ma','kota') as wynik3;
+
+SET ANSI_NULLS ON
+SET ANSI_NULLS OF
+
+SELECT
+LEN(Nazwisko) as wynik_1,
+LEN(Imie) as wynik_2
+FROM Nazwiska;
+
+SELECT
+SUBSTRING(Nazwisko,1,5) as Wynik1,
+SUBSTRING('Ala ma kota',8,4) as Wynik2
+FROM Nazwiska;
+
+SELECT Nazwisko,
+REPLACE(Nazwisko,'i','a') as Wynik1
+FROM Nazwiska;
+
+SELECT Nazwisko,
+CHARINDEX('ski',nazwisko) as wynik1,
+CHARINDEX('o',nazwisko,2) as wynik2
+FROM Nazwiska;
+
+SELECT
+Nazwisko,
+STUFF(Nazwisko,1,0,'vel')
+FROM Nazwiska;
+
+SELECT Numer,
+CONCAT('Super pracownik - ','Imie',Nazwisko)
+as Laurka
+FROM Nazwiska 
+WHERE stanowisko <>'prezes'
+
+
+SELECT
+SYSDATETIME() as [SYSDATETIME],
+SYSDATETIMEOFFSET() as [SYSDATETIMEOFFSET],
+GETDATE() as [GETDATE],
+GETUTCDATE() as [GETUTCDATE],
+CURRENT_TIMESTAMP as [CURRENT_TIMESTAMP],
+SYSUTCDATETIME() as [SYSUTCDATETIME];
+
+SELECT
+DATEDIFF(DD,'1906-01-01',GETDATE()) as Dni,
+DATEDIFF_BIG(ms,'1906-01-01',GETDATE())
+as Milisekundy;
+
+CREATE VIEW zleceniaPracownikow AS
+SELECT 
+N.Numer, N.Imie, N.Nazwisko, N.Stanowisko,
+N.Pensja, N.Miasto, K.Zawód, K.Telefon, K.Data_rozp,
+K.Premia, K.Uwagi, Z.Kod_zlecenia, Z.Wartosc_zlecenia
+FROM Nazwiska AS N
+LEFT JOIN Nowa AS K
+ON N.Numer = K.Nr_ident
+LEFT JOIN Zlecenia AS Z
+ON n.Numer=Z.Nr_prac;
+
+SELECT  Imie, Nazwisko
+FROM zleceniaPracownikow
+WHERE kod_zlecenia is null
+
+SELECT CONCAT(UPPER(SUBSTRING(Stanowisko,1,1))+SUBSTRING(Stanowisko,2,LEN(Stanowisko)),
+' ', Imie,' ', Nazwisko,' zarabia ',+ CONVERT(VARCHAR(10),Pensja)) AS Informacja
+FROM Nazwiska;
+
+SELECT 
+N.Numer, N.Imie, N.Nazwisko, N.Stanowisko,
+N.Pensja, K.Premia, Z.Wartosc_zlecenia,
+(N.Pensja + K.Premia + Z.Wartosc_zlecenia) AS SUM
+FROM Nazwiska AS N
+LEFT JOIN Nowa AS K
+ON N.Numer = K.Nr_ident
+LEFT JOIN Zlecenia AS Z
+ON n.Numer=Z.Nr_prac
